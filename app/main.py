@@ -7,9 +7,30 @@ from .models.database import engine, Base
 import sys
 import os
 
-# Create tables automatically on startup (unless running tests)
+# Create tables and auto-seed admin automatically on startup (unless running tests)
 if "pytest" not in sys.modules:
     Base.metadata.create_all(bind=engine)
+    try:
+        from .models.database import SessionLocal
+        from .models.models import User, UserRole
+        from .auth.security import get_password_hash
+
+        db = SessionLocal()
+        admin_email = os.getenv("ADMIN_EMAIL", "tarikkhalfaoui4@gmail.com")
+        admin_pass = os.getenv("ADMIN_PASSWORD", "spark_sql")
+        existing_admin = db.query(User).filter(User.email == admin_email).first()
+        if not existing_admin:
+            new_admin = User(
+                email=admin_email,
+                hashed_password=get_password_hash(admin_pass),
+                role=UserRole.ADMIN
+            )
+            db.add(new_admin)
+            db.commit()
+            print(f"[INFO] Admin user {admin_email} created automatically.")
+        db.close()
+    except Exception as e:
+        print(f"[WARNING] Auto-seed admin error: {e}")
 
 app = FastAPI(
     title="Internat Admission System API",
