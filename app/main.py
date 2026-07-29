@@ -5,6 +5,7 @@ from .routers import auth, applications, admin, rooms, notifications, chat, paym
 from .models.database import engine, Base
 
 import sys
+import os
 
 # Create tables automatically on startup (unless running tests)
 if "pytest" not in sys.modules:
@@ -28,6 +29,10 @@ origins = [
     "capacitor://localhost",      # Capacitor default iOS origin
     "ionic://localhost",          # Alternative mobile origin
 ]
+
+frontend_url = os.getenv("FRONTEND_URL")
+if frontend_url:
+    origins.append(frontend_url)
 
 app.add_middleware(
     CORSMiddleware,
@@ -90,7 +95,7 @@ async def global_exception_handler(request, exc):
         content={"detail": "Une erreur inattendue est survenue."}
     )
 
-import os
+
 
 # Serve uploaded documents
 os.makedirs("uploads", exist_ok=True)

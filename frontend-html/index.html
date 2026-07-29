@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>e-Internat — Lycée Technique Mohamed V</title>
+  <meta name="description" content="Plateforme officielle d'admission à l'internat du Lycée Technique Mohamed V — Beni Mellal. Candidature en ligne, suivi en temps réel." />
+  <link rel="stylesheet" href="css/design-system.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/home.css" />
+</head>
+<body>
+  <div class="page-wrapper">
+
+    <!-- ═══════ NAVBAR ═══════ -->
+    <nav class="navbar" id="navbar">
+      <a href="index.html" class="navbar-brand">
+        <img src="assets/official_logo.png" alt="Logo" />
+        <span>e‑<span class="text-gradient-green">Internat</span></span>
+      </a>
+
+      <div class="navbar-links" id="nav-links">
+        <a href="index.html" class="active">Accueil</a>
+        <a href="login.html">Connexion</a>
+        <a href="register.html">Inscription</a>
+      </div>
+
+      <div class="navbar-actions">
+        <!-- Language -->
+        <div class="lang-dropdown">
+          <button class="lang-trigger" type="button">
+            🌐 <span class="lang-code">FR</span>
+          </button>
+          <div class="lang-menu">
+            <button data-lang="fr" class="active">🇫🇷 Français <span class="dot"></span></button>
+            <button data-lang="en">🇬🇧 English</button>
+            <button data-lang="ar">🇲🇦 العربية</button>
+          </div>
+        </div>
+        <!-- Theme -->
+        <button class="theme-toggle" id="theme-toggle" type="button" onclick="theme.toggle()">🌙</button>
+        <!-- Mobile menu -->
+        <button class="mobile-menu-btn" id="mobile-menu-btn" type="button">☰</button>
+      </div>
+    </nav>
+
+    <!-- ═══════ HERO ═══════ -->
+    <section class="hero">
+      <img src="assets/campus_banner.png" alt="Campus du Lycée Technique Mohamed V" class="hero-bg" />
+      <div class="hero-overlay"></div>
+      <div class="hero-fade"></div>
+      <div class="hero-grain animate-grain"></div>
+      <div class="hero-accent-line"></div>
+
+      <div class="hero-content">
+        <div class="hero-badge">
+          <span class="pulse-dot"></span>
+          Session 2026/2027 Ouverte
+        </div>
+
+        <h1>L'Excellence commence ici</h1>
+        <p class="hero-subtitle">
+          La plateforme officielle d'admission à l'internat du Lycée Technique Mohamed V — Beni Mellal.
+        </p>
+
+        <div class="hero-ctas">
+          <a href="register.html" class="btn btn-primary btn-lg">
+            Déposer ma candidature →
+          </a>
+          <a href="login.html" class="btn-ghost">
+            Accéder à mon espace ›
+          </a>
+        </div>
+
+        <div class="hero-trust">
+          <span><span class="icon">🛡</span> Données sécurisées</span>
+          <span><span class="icon">✓</span> Gratuit pour les étudiants</span>
+          <span><span class="icon">⚡</span> Traitement rapide</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Scroll indicator -->
+    <div class="scroll-indicator">
+      <span>Découvrir</span>
+      <div class="scroll-mouse">
+        <div class="scroll-dot"></div>
+      </div>
+    </div>
+
+    <!-- ═══════ STATS ═══════ -->
+    <section class="py-20 px-4">
+      <div class="container container-lg">
+        <div class="stats-grid" id="stats-grid">
+          <div class="stat-card reveal">
+            <div class="top-bar" style="background: linear-gradient(to right, #059669, #10b981);"></div>
+            <div class="stat-icon" style="background: #ecfdf5; color: #059669;">👨‍🎓</div>
+            <div class="stat-value" data-target="2500" data-suffix="+">0</div>
+            <p class="stat-label">Étudiants admis</p>
+          </div>
+          <div class="stat-card reveal delay-100">
+            <div class="top-bar" style="background: linear-gradient(to right, #4f46e5, #6366f1);"></div>
+            <div class="stat-icon" style="background: #eef2ff; color: #4f46e5;">🏠</div>
+            <div class="stat-value" data-target="850" data-suffix="">0</div>
+            <p class="stat-label">Chambres disponibles</p>
+          </div>
+          <div class="stat-card reveal delay-200">
+            <div class="top-bar" style="background: linear-gradient(to right, #d97706, #f59e0b);"></div>
+            <div class="stat-icon" style="background: #fffbeb; color: #d97706;">🏆</div>
+            <div class="stat-value" data-target="98" data-suffix="%">0</div>
+            <p class="stat-label">Satisfaction</p>
+          </div>
+          <div class="stat-card reveal delay-300">
+            <div class="top-bar" style="background: linear-gradient(to right, #0284c7, #38bdf8);"></div>
+            <div class="stat-icon" style="background: #f0f9ff; color: #0284c7;">⏱</div>
+            <div class="stat-value" data-target="4" data-suffix="h">0</div>
+            <p class="stat-label">Délai de réponse</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════ FEATURES ═══════ -->
+    <section class="py-24 px-4 relative">
+      <div class="mesh-gradient" style="position:absolute;inset:0;opacity:0.5;pointer-events:none;"></div>
+      <div class="container container-lg relative" style="z-index:1;">
+        <div class="text-center mb-8">
+          <div class="section-eyebrow">✨ Pourquoi e-Internat ?</div>
+          <h2 class="section-title">Tout ce dont vous avez besoin</h2>
+          <p class="section-desc">Une expérience d'admission repensée pour les étudiants modernes.</p>
+        </div>
+
+        <div class="features-grid">
+          <div class="feature-card reveal">
+            <div class="feature-icon" style="background: rgba(16,185,129,0.1); color: #10b981;">⚡</div>
+            <h4>Candidature Rapide</h4>
+            <p>Soumettez votre dossier en moins de 5 minutes depuis n'importe quel appareil, partout et à tout moment.</p>
+          </div>
+          <div class="feature-card reveal delay-100">
+            <div class="feature-icon" style="background: rgba(99,102,241,0.1); color: #6366f1;">🛡</div>
+            <h4>Sécurité Garantie</h4>
+            <p>Vos documents et données personnelles sont protégés par un chiffrement de bout en bout.</p>
+          </div>
+          <div class="feature-card reveal delay-200">
+            <div class="feature-icon" style="background: rgba(245,158,11,0.1); color: #f59e0b;">📍</div>
+            <h4>Suivi en Temps Réel</h4>
+            <p>Suivez l'avancement de votre dossier et recevez des notifications instantanées à chaque décision.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════ HOW IT WORKS ═══════ -->
+    <section class="py-24 px-4">
+      <div class="container container-lg">
+        <div class="how-grid">
+          <div class="how-left reveal">
+            <div class="section-eyebrow">Processus simplifié</div>
+            <h2>Intégrez <span class="text-gradient-mix">l'internat</span><br/>en 4 étapes</h2>
+            <p>Notre processus 100% en ligne vous permet de candidater depuis votre domicile en quelques minutes.</p>
+            <a href="register.html" class="btn btn-primary">Commencer maintenant →</a>
+          </div>
+
+          <div>
+            <div class="step-item reveal">
+              <div class="step-number">📄</div>
+              <div class="step-line"></div>
+              <div class="step-content">
+                <p class="step-label">Étape 1</p>
+                <h4>Créez votre compte</h4>
+                <p>Inscription rapide avec votre email académique.</p>
+              </div>
+            </div>
+            <div class="step-item reveal delay-100">
+              <div class="step-number">🎓</div>
+              <div class="step-line"></div>
+              <div class="step-content">
+                <p class="step-label">Étape 2</p>
+                <h4>Remplissez le dossier</h4>
+                <p>Saisissez vos informations et joignez vos documents.</p>
+              </div>
+            </div>
+            <div class="step-item reveal delay-200">
+              <div class="step-number">🔔</div>
+              <div class="step-line"></div>
+              <div class="step-content">
+                <p class="step-label">Étape 3</p>
+                <h4>Suivez en temps réel</h4>
+                <p>Restez informé à chaque étape de votre candidature.</p>
+              </div>
+            </div>
+            <div class="step-item reveal delay-300">
+              <div class="step-number">💳</div>
+              <div class="step-content">
+                <p class="step-label">Étape 4</p>
+                <h4>Finalisez votre admission</h4>
+                <p>Téléchargez votre attestation et intégrez l'internat.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════ TESTIMONIALS ═══════ -->
+    <section class="py-24 px-4 overflow-hidden">
+      <div class="container container-md text-center">
+        <div class="section-eyebrow reveal">Témoignages</div>
+        <h2 class="section-title reveal">Ce que disent nos étudiants</h2>
+
+        <div class="testimonial-carousel" id="testimonial-carousel">
+          <div class="testimonial-slide active" data-index="0">
+            <div class="testimonial-avatar" style="background: linear-gradient(135deg, #10b981, #14b8a6);">FZ</div>
+            <div class="testimonial-stars">★★★★★</div>
+            <blockquote class="testimonial-text">"Grâce à e-Internat, j'ai soumis mon dossier en quelques minutes et suivi ma candidature en temps réel. Admise en 3 jours !"</blockquote>
+            <p class="testimonial-name">Fatima Z. <span>— Génie Électrique</span></p>
+          </div>
+          <div class="testimonial-slide" data-index="1">
+            <div class="testimonial-avatar" style="background: linear-gradient(135deg, #6366f1, #8b5cf6);">YA</div>
+            <div class="testimonial-stars">★★★★★</div>
+            <blockquote class="testimonial-text">"L'interface est moderne et très intuitive. Les notifications m'ont tenu informé à chaque étape. Je recommande vraiment."</blockquote>
+            <p class="testimonial-name">Youssef A. <span>— Informatique</span></p>
+          </div>
+          <div class="testimonial-slide" data-index="2">
+            <div class="testimonial-avatar" style="background: linear-gradient(135deg, #f59e0b, #f97316);">MB</div>
+            <div class="testimonial-stars">★★★★★</div>
+            <blockquote class="testimonial-text">"J'avais peur des démarches administratives, mais tout s'est fait en ligne facilement. Le support est réactif."</blockquote>
+            <p class="testimonial-name">Mariam B. <span>— Génie Civil</span></p>
+          </div>
+        </div>
+
+        <div class="testimonial-dots" id="testimonial-dots">
+          <button class="testimonial-dot active" data-index="0"></button>
+          <button class="testimonial-dot" data-index="1"></button>
+          <button class="testimonial-dot" data-index="2"></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════ CTA ═══════ -->
+    <section class="py-24 px-4">
+      <div class="container container-lg">
+        <div class="cta-section reveal">
+          <div class="cta-glow-top"></div>
+          <div class="cta-glow-bottom"></div>
+          <div class="cta-particle animate-float" style="top:25%;left:25%;width:8px;height:8px;background:rgba(52,211,153,0.3);"></div>
+          <div class="cta-particle animate-float delay-2000" style="top:33%;right:33%;width:6px;height:6px;background:rgba(99,102,241,0.3);"></div>
+          <div class="cta-particle animate-float delay-1000" style="bottom:25%;left:33%;width:4px;height:4px;background:rgba(245,158,11,0.4);"></div>
+
+          <div class="cta-content">
+            <div class="hero-badge" style="margin:0 auto 1.5rem;">
+              <span class="pulse-dot"></span>
+              Session ouverte
+            </div>
+            <h2>Ne manquez pas<br/><span class="text-gradient-green">votre place</span></h2>
+            <p>Les places sont limitées. Soumettez votre candidature dès maintenant et démarrez votre parcours académique dans les meilleures conditions.</p>
+
+            <div class="cta-buttons">
+              <a href="register.html" class="cta-btn-white">Créer mon compte gratuitement →</a>
+              <a href="login.html" class="cta-btn-ghost">Déjà inscrit ? Se connecter</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════ FOOTER ═══════ -->
+    <footer class="footer">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <a href="index.html" class="navbar-brand">
+            <img src="assets/official_logo.png" alt="Logo" style="height:2.25rem;" />
+            <span style="font-weight:900;font-size:1.1rem;">e‑<span class="text-gradient-green">Internat</span></span>
+          </a>
+          <p>Plateforme officielle de gestion des admissions à l'internat du Lycée Technique Mohamed V — Beni Mellal.</p>
+          <div class="footer-contact">
+            <div class="footer-contact-item">
+              <div class="footer-contact-icon">📍</div> Beni Mellal, Maroc
+            </div>
+            <div class="footer-contact-item">
+              <div class="footer-contact-icon">✉</div> internat@ltmv.ma
+            </div>
+            <div class="footer-contact-item">
+              <div class="footer-contact-icon">📞</div> +212 5XX-XXXXXX
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="footer-heading">
+            <span class="accent-bar" style="background:#10b981;"></span>
+            Plateforme
+          </h4>
+          <div class="footer-links">
+            <a href="index.html">Accueil</a>
+            <a href="login.html">Connexion</a>
+            <a href="register.html">S'inscrire</a>
+            <a href="dashboard.html">Mon Dossier</a>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="footer-heading">
+            <span class="accent-bar" style="background:#6366f1;"></span>
+            Légal
+          </h4>
+          <div class="footer-links">
+            <a href="#">Politique de confidentialité</a>
+            <a href="#">Conditions d'utilisation</a>
+            <a href="#">Accessibilité</a>
+          </div>
+          <div class="session-badge">
+            <span class="dot"></span>
+            <span>Session 2026/2027 Ouverte</span>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>🎓 © 2026 Lycée Technique Mohamed V — Beni Mellal. Tous droits réservés.</p>
+        <p>Fait avec ❤️ par l'équipe e-Internat</p>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- JS -->
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/home.js"></script>
+</body>
+</html>

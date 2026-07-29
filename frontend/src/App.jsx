@@ -11,6 +11,7 @@ import ResetPassword from './pages/ResetPassword';
 import Dashboard from './pages/Dashboard';
 import Apply from './pages/Apply';
 import AdminDashboard from './pages/AdminDashboard';
+import NotFound from './pages/NotFound';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import { Toaster } from 'react-hot-toast';
@@ -32,6 +33,12 @@ const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem('token');
   if (!token) {
     return <Navigate to="/login" replace />;
+  }
+  // Also verify the token hasn't expired client-side
+  const payload = parseJwt(token);
+  if (!payload || (payload.exp && payload.exp * 1000 < Date.now())) {
+    localStorage.removeItem('token');
+    return <Navigate to="/login" replace state={{ message: 'Session expirée. Veuillez vous reconnecter.' }} />;
   }
   return children;
 };
@@ -99,7 +106,7 @@ const AnimatedRoutes = () => {
               </AdminRoute>
             }
           />
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </motion.div>
     </AnimatePresence>

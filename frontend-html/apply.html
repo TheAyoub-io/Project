@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Candidature — e-Internat</title>
+  <link rel="stylesheet" href="css/design-system.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/apply.css" />
+</head>
+<body>
+  <div class="page-wrapper">
+
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+      <a href="index.html" class="navbar-brand">
+        <img src="assets/official_logo.png" alt="Logo" />
+        <span>e‑<span class="text-gradient-green">Internat</span></span>
+      </a>
+      <div class="navbar-links" id="nav-links">
+        <a href="index.html">Accueil</a>
+        <a href="dashboard.html">Mon Espace</a>
+        <a href="apply.html" class="active">Candidature</a>
+        <a href="#" onclick="auth.logout(); return false;">Déconnexion</a>
+      </div>
+      <div class="navbar-actions">
+        <button class="theme-toggle" id="theme-toggle" type="button" onclick="theme.toggle()">🌙</button>
+        <button class="mobile-menu-btn" id="mobile-menu-btn" type="button">☰</button>
+      </div>
+    </nav>
+
+    <div class="page-content apply-wrapper">
+      <div class="container container-md">
+        
+        <div class="apply-header reveal">
+          <h1>Dossier de candidature</h1>
+          <p>Veuillez remplir toutes les informations requises et joindre les pièces justificatives pour soumettre votre demande.</p>
+        </div>
+
+        <div id="already-submitted-msg" class="hidden alert alert-info mb-8" style="justify-content:center;">
+          Vous avez déjà soumis une candidature. <a href="dashboard.html" style="font-weight:bold;margin-left:0.5rem;text-decoration:underline;">Suivre mon dossier</a>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="steps-progress reveal delay-100" id="steps-progress">
+          <div class="steps-progress-fill" id="progress-fill"></div>
+          
+          <div class="step-indicator active" data-step="1">
+            <div class="step-circle">1</div>
+            <div class="step-label">Personnel</div>
+          </div>
+          <div class="step-indicator" data-step="2">
+            <div class="step-circle">2</div>
+            <div class="step-label">Académique</div>
+          </div>
+          <div class="step-indicator" data-step="3">
+            <div class="step-circle">3</div>
+            <div class="step-label">Documents</div>
+          </div>
+          <div class="step-indicator" data-step="4">
+            <div class="step-circle">4</div>
+            <div class="step-label">Aperçu</div>
+          </div>
+        </div>
+
+        <div id="alert-container"></div>
+
+        <!-- Form Container -->
+        <form id="apply-form" class="glass-card reveal delay-200">
+          
+          <!-- STEP 1: Personal Info -->
+          <div class="form-section active" id="step-1">
+            <h3 class="section-title">Informations Personnelles</h3>
+            <div class="form-grid-2">
+              <div class="auth-input-group">
+                <label class="form-label">Prénom <span style="color:#ef4444">*</span></label>
+                <input type="text" id="first_name" class="form-input" required />
+              </div>
+              <div class="auth-input-group">
+                <label class="form-label">Nom <span style="color:#ef4444">*</span></label>
+                <input type="text" id="last_name" class="form-input" required />
+              </div>
+              <div class="auth-input-group">
+                <label class="form-label">Date de naissance <span style="color:#ef4444">*</span></label>
+                <input type="date" id="date_of_birth" class="form-input" required />
+              </div>
+              <div class="auth-input-group">
+                <label class="form-label">Lieu de naissance</label>
+                <input type="text" id="place_of_birth" class="form-input" />
+              </div>
+              <div class="auth-input-group">
+                <label class="form-label">Sexe <span style="color:#ef4444">*</span></label>
+                <select id="gender" class="form-input" required>
+                  <option value="">Sélectionner</option>
+                  <option value="M">Masculin</option>
+                  <option value="F">Féminin</option>
+                </select>
+              </div>
+              <div class="auth-input-group">
+                <label class="form-label">Code Massar / CIN <span style="color:#ef4444">*</span></label>
+                <input type="text" id="cin_massar" class="form-input" required />
+              </div>
+              <div class="auth-input-group" style="grid-column: 1 / -1;">
+                <label class="form-label">Adresse de résidence <span style="color:#ef4444">*</span></label>
+                <input type="text" id="address" class="form-input" required />
+              </div>
+              <div class="auth-input-group">
+                <label class="form-label">Ville <span style="color:#ef4444">*</span></label>
+                <select id="city_id" class="form-input" required>
+                  <option value="">Sélectionner une ville</option>
+                  <!-- Injected via JS -->
+                </select>
+              </div>
+              <div class="auth-input-group">
+                <label class="form-label">Téléphone</label>
+                <input type="tel" id="phone_number" class="form-input" />
+              </div>
+            </div>
+            <div class="form-actions" style="justify-content:flex-end;">
+              <button type="button" class="btn btn-primary btn-next">Suivant →</button>
+            </div>
+          </div>
+
+          <!-- STEP 2: Academic & Parents -->
+          <div class="form-section" id="step-2">
+            <h3 class="section-title">Parcours & Parents</h3>
+            <div class="form-grid-2">
+              <div class="auth-input-group" style="grid-column: 1 / -1;">
+                <label class="form-label">Filière d'étude <span style="color:#ef4444">*</span></label>
+                <select id="filiere" class="form-input" required>
+                  <option value="">Sélectionner une filière</option>
+                  <option value="Sciences Mathématiques A">Sciences Mathématiques A</option>
+                  <option value="Sciences Mathématiques B">Sciences Mathématiques B</option>
+                  <option value="Sciences Physiques">Sciences Physiques</option>
+                  <option value="Sciences de la Vie et de la Terre">Sciences de la Vie et de la Terre</option>
+                  <option value="Sciences Économiques">Sciences Économiques</option>
+                  <option value="Techniques de Gestion et Comptabilité">Techniques de Gestion et Comptabilité</option>
+                  <option value="Sciences et Technologies Mécaniques">Sciences et Technologies Mécaniques</option>
+                  <option value="Sciences et Technologies Électriques">Sciences et Technologies Électriques</option>
+                </select>
+              </div>
+              <div class="auth-input-group">
+                <label class="form-label">Nom du père</label>
+                <input type="text" id="father_name" class="form-input" />
+              </div>
+              <div class="auth-input-group">
+                <label class="form-label">Profession du père</label>
+                <input type="text" id="father_profession" class="form-input" />
+              </div>
+              <div class="auth-input-group">
+                <label class="form-label">Nom de la mère</label>
+                <input type="text" id="mother_name" class="form-input" />
+              </div>
+              <div class="auth-input-group">
+                <label class="form-label">Profession de la mère</label>
+                <input type="text" id="mother_profession" class="form-input" />
+              </div>
+              <div class="auth-input-group">
+                <label class="form-label">Revenu annuel des parents (MAD) <span style="color:#ef4444">*</span></label>
+                <input type="number" id="parents_revenue" class="form-input" step="1000" min="0" required />
+              </div>
+              <div class="auth-input-group">
+                <label class="form-label">Maladies ou allergies éventuelles</label>
+                <input type="text" id="illnesses" class="form-input" placeholder="Optionnel" />
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="button" class="btn btn-outline btn-prev">← Précédent</button>
+              <button type="button" class="btn btn-primary btn-next">Suivant →</button>
+            </div>
+          </div>
+
+          <!-- STEP 3: Documents Upload -->
+          <div class="form-section" id="step-3">
+            <h3 class="section-title">Pièces Justificatives</h3>
+            <p class="text-sm text-muted mb-6">Formats acceptés : PDF, JPG, PNG (Max 5Mo par fichier).</p>
+            
+            <div class="flex-col gap-6">
+              <!-- Bulletins -->
+              <div>
+                <label class="form-label">Bulletins de notes de l'année précédente <span style="color:#ef4444">*</span></label>
+                <div class="file-upload-zone" id="drop-bulletins">
+                  <div class="icon">📄</div>
+                  <p>Glissez-déposez ou cliquez pour sélectionner</p>
+                  <span class="hint">bulletins.pdf</span>
+                  <input type="file" id="bulletins_file" accept=".pdf,.jpg,.jpeg,.png" required />
+                </div>
+                <div id="preview-bulletins" class="hidden"></div>
+              </div>
+
+              <!-- Revenue -->
+              <div>
+                <label class="form-label">Attestation de revenu des parents <span style="color:#ef4444">*</span></label>
+                <div class="file-upload-zone" id="drop-revenue">
+                  <div class="icon">💰</div>
+                  <p>Glissez-déposez ou cliquez pour sélectionner</p>
+                  <span class="hint">revenu.pdf</span>
+                  <input type="file" id="parent_revenue_file" accept=".pdf,.jpg,.jpeg,.png" required />
+                </div>
+                <div id="preview-revenue" class="hidden"></div>
+              </div>
+
+              <!-- Residence -->
+              <div>
+                <label class="form-label">Certificat de résidence <span style="color:#ef4444">*</span></label>
+                <div class="file-upload-zone" id="drop-residence">
+                  <div class="icon">🏠</div>
+                  <p>Glissez-déposez ou cliquez pour sélectionner</p>
+                  <span class="hint">residence.pdf</span>
+                  <input type="file" id="residence_cert_file" accept=".pdf,.jpg,.jpeg,.png" required />
+                </div>
+                <div id="preview-residence" class="hidden"></div>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" class="btn btn-outline btn-prev">← Précédent</button>
+              <button type="button" class="btn btn-primary btn-next">Vérifier →</button>
+            </div>
+          </div>
+
+          <!-- STEP 4: Review -->
+          <div class="form-section" id="step-4">
+            <h3 class="section-title">Aperçu & Soumission</h3>
+            
+            <div class="summary-block">
+              <h4><span class="icon">👤</span> Informations Personnelles</h4>
+              <div class="summary-item"><span class="summary-label">Nom complet</span><span class="summary-value" id="sum-name">--</span></div>
+              <div class="summary-item"><span class="summary-label">Sexe</span><span class="summary-value" id="sum-gender">--</span></div>
+              <div class="summary-item"><span class="summary-label">Massar/CIN</span><span class="summary-value" id="sum-massar">--</span></div>
+              <div class="summary-item"><span class="summary-label">Ville</span><span class="summary-value" id="sum-city">--</span></div>
+            </div>
+
+            <div class="summary-block">
+              <h4><span class="icon">🎓</span> Académique & Parents</h4>
+              <div class="summary-item"><span class="summary-label">Filière</span><span class="summary-value" id="sum-filiere">--</span></div>
+              <div class="summary-item"><span class="summary-label">Revenu</span><span class="summary-value" id="sum-revenue">--</span></div>
+            </div>
+
+            <div class="summary-block">
+              <h4><span class="icon">📎</span> Documents</h4>
+              <div class="summary-item"><span class="summary-label">Bulletins</span><span class="summary-value" id="sum-doc-1">Non fourni</span></div>
+              <div class="summary-item"><span class="summary-label">Attestation revenu</span><span class="summary-value" id="sum-doc-2">Non fourni</span></div>
+              <div class="summary-item"><span class="summary-label">Certificat résidence</span><span class="summary-value" id="sum-doc-3">Non fourni</span></div>
+            </div>
+
+            <div style="margin-top: 1.5rem; display: flex; gap: 0.75rem; align-items: flex-start;">
+              <input type="checkbox" id="certify" required style="margin-top: 0.25rem;" />
+              <label for="certify" class="text-sm font-bold text-muted">Je certifie sur l'honneur l'exactitude des renseignements fournis. Toute fausse déclaration entraînera l'annulation de la candidature.</label>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" class="btn btn-outline btn-prev">← Modifier</button>
+              <button type="submit" class="btn btn-primary" id="submit-final-btn" disabled>Soumettre mon dossier</button>
+            </div>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-bottom">
+        <p>🎓 © 2026 Lycée Technique Mohamed V. Tous droits réservés.</p>
+      </div>
+    </footer>
+
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/apply.js"></script>
+</body>
+</html>

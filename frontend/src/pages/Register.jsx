@@ -4,9 +4,10 @@ import { Eye, EyeOff } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
+import { GoogleLogin } from '@react-oauth/google';
 import logoImg from '../assets/official_logo.png';
 import FormError from '../components/FormError';
-import { useRegister } from '../hooks/useAuth';
+import { useRegister, useGoogleLogin } from '../hooks/useAuth';
 
 const Register = () => {
   const { t } = useTranslation();
@@ -18,6 +19,7 @@ const Register = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const { mutate: register, isPending: loading } = useRegister();
+  const { mutate: googleLogin, isPending: googleLoading } = useGoogleLogin();
 
   React.useEffect(() => {
     const token = localStorage.getItem('token');
@@ -55,6 +57,27 @@ const Register = () => {
         setError(errMsg);
       }
     });
+  };
+
+  const handleGoogleSuccess = (credentialResponse) => {
+    setError('');
+    googleLogin(credentialResponse.credential, {
+      onSuccess: (data) => {
+        const token = data.access_token;
+        localStorage.setItem('token', token);
+        toast.success(t('success_register') || 'Compte Google connecté avec succès !');
+        navigate('/dashboard');
+      },
+      onError: (err) => {
+        let detail = err.response?.data?.detail;
+        if (Array.isArray(detail)) detail = detail[0].msg;
+        setError(detail || "Échec de l'inscription avec Google");
+      }
+    });
+  };
+
+  const handleGoogleError = () => {
+    setError('Erreur lors de la connexion avec Google');
   };
 
   const inputStyle = { paddingRight: '3rem' };
@@ -150,10 +173,9 @@ const Register = () => {
                   </div>
                 </div>
 
-                {/* Submit */}
                 <button
                   type="submit"
-                  disabled={loading}
+                  disabled={loading || googleLoading}
                   className="w-full py-2.5 rounded-lg bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition-colors"
                 >
                   {loading ? (
@@ -165,6 +187,26 @@ const Register = () => {
                     t('register') || "S'inscrire"
                   )}
                 </button>
+
+                <div className="relative my-6">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-slate-200"></div>
+                  </div>
+                  <div className="relative flex justify-center text-sm">
+                    <span className="px-2 bg-white text-slate-500">Ou s'inscrire avec</span>
+                  </div>
+                </div>
+
+                <div className="flex justify-center">
+                  <GoogleLogin
+                    onSuccess={handleGoogleSuccess}
+                    onError={handleGoogleError}
+                    useOneTap
+                    theme="outline"
+                    shape="pill"
+                    width="100%"
+                  />
+                </div>
 
                 {/* Login link */}
                 <p className="text-center mt-6 text-sm text-slate-500">

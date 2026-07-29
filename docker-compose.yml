@@ -5,9 +5,9 @@ services:
     image: postgres:15-alpine
     restart: always
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=internat_db
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_DB=${POSTGRES_DB:-internat_db}
     ports:
       - "5432:5432"
     volumes:
@@ -19,18 +19,21 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/internat_db
-      - SECRET_KEY=dev_secret_key_123
-      - ALGORITHM=HS256
-      - ACCESS_TOKEN_EXPIRE_MINUTES=30
-      - EMAILS_ENABLED=true
-      - SMTP_HOST=smtp.gmail.com
-      - SMTP_PORT=587
-      - SMTP_USER=nadaberrimi@gmail.com
-      - SMTP_PASSWORD=wnqywikcxpvuvssv
-      - FRONTEND_URL=http://localhost
+      - DATABASE_URL=${DATABASE_URL:-postgresql://postgres:postgres@db:5432/internat_db}
+      - SECRET_KEY=${SECRET_KEY:-dev_secret_key_123}
+      - ALGORITHM=${ALGORITHM:-HS256}
+      - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES:-30}
+      - EMAILS_ENABLED=${EMAILS_ENABLED:-true}
+      - SMTP_HOST=${SMTP_HOST:-smtp.gmail.com}
+      - SMTP_PORT=${SMTP_PORT:-587}
+      - SMTP_USER=${SMTP_USER:-nadaberrimi@gmail.com}
+      - SMTP_PASSWORD=${SMTP_PASSWORD:-wnqywikcxpvuvssv}
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:5173}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY:-}
     depends_on:
       - db
+    volumes:
+      - ./uploads:/app/uploads
 
   frontend:
     build: 

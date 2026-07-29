@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FileText, CheckCircle, XCircle, Clock, User, DoorOpen, ArrowRight, AlertCircle, Edit3, Download, MessageCircle, Phone, MapPin, GraduationCap, LayoutDashboard, MessageSquareWarning, Upload, Camera, Home, Sparkles, Receipt, Contact } from 'lucide-react';
+import { FileText, CheckCircle, XCircle, Clock, User, DoorOpen, ArrowRight, AlertCircle, Edit3, Download, MessageCircle, Phone, MapPin, GraduationCap, LayoutDashboard, MessageSquareWarning, Upload, Camera, Home, Sparkles, Receipt, Contact, Eye } from 'lucide-react';
 import { toast } from 'react-hot-toast';
-import html2pdf from 'html2pdf.js';
+// html2pdf is lazy-loaded inside handleDownloadPDF to avoid bloating the initial bundle
 
 import { useTranslation } from 'react-i18next';
 import Skeleton from '../components/ui/Skeleton';
@@ -12,10 +12,12 @@ import VisualRoomMap from '../components/student/VisualRoomMap';
 
 import { useMyStatus, useUpdateProfile } from '../hooks/useApplications';
 import { useCreateCheckoutSession } from '../hooks/usePayment';
+import { useQueryClient } from '@tanstack/react-query';
 import api from '../lib/axios';
 
 const Dashboard = () => {
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
   const { data: statusData, isLoading: loading, error } = useMyStatus();
   const { mutate: updateProfile, isPending: profileSaving } = useUpdateProfile();
   const { mutateAsync: createCheckoutSession } = useCreateCheckoutSession();
@@ -24,7 +26,28 @@ const Dashboard = () => {
   const [profileForm, setProfileForm] = useState({ phone: '', address: '', city: '' });
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [receiptFile, setReceiptFile] = useState(null);
+  const [receiptPreviewUrl, setReceiptPreviewUrl] = useState(null);
   const [uploadingReceipt, setUploadingReceipt] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
+
+  const handleReceiptFileChange = (file) => {
+    if (!file) return;
+    setReceiptFile(file);
+    // Create a preview URL for image files
+    if (file.type.startsWith('image/')) {
+      const url = URL.createObjectURL(file);
+      setReceiptPreviewUrl(url);
+    } else {
+      setReceiptPreviewUrl(null);
+    }
+  };
+
+  const handleClearReceipt = () => {
+    if (receiptPreviewUrl) URL.revokeObjectURL(receiptPreviewUrl);
+    setReceiptFile(null);
+    setReceiptPreviewUrl(null);
+    setShowPreview(false);
+  };
 
   const handleUploadReceipt = async () => {
     if (!receiptFile) return;
@@ -35,11 +58,12 @@ const Dashboard = () => {
       await api.post('/applications/upload-receipt', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-      toast.success("Reçu soumis avec succès !");
-      setReceiptFile(null);
-      window.location.reload();
+      toast.success(t('receipt_submitted') || "Reçu soumis avec succès !");
+      handleClearReceipt();
+      // Invalidate React Query cache instead of hard-reloading the page
+      queryClient.invalidateQueries({ queryKey: ['myStatus'] });
     } catch (err) {
-      toast.error("Erreur lors de l'envoi du reçu");
+      toast.error(t('receipt_error') || "Erreur lors de l'envoi du reçu");
     } finally {
       setUploadingReceipt(false);
     }
@@ -53,7 +77,7 @@ const Dashboard = () => {
     });
   };
 
-  const handleDownloadPDF = () => {
+  const handleDownloadPDF = async () => {
     const loadingToast = toast.loading(t('generating_attestation') || 'Génération...');
     const element = document.getElementById('attestation-pdf-template');
     if (!element) { toast.error('Erreur template', { id: loadingToast }); return; }
@@ -62,24 +86,20 @@ const Dashboard = () => {
       margin: 10,
       filename: `Attestation_${profile?.full_name?.replace(/\s+/g, '_') || 'Etudiant'}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true, logging: true, windowWidth: 800 },
+      html2canvas: { scale: 2, useCORS: true, logging: false, windowWidth: 800 },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
     try {
-      const generatePdf = typeof html2pdf === 'function' ? html2pdf : html2pdf.default;
+      // Lazy-load html2pdf only when the user actually requests a download
+      const html2pdfModule = await import('html2pdf.js');
+      const generatePdf = html2pdfModule.default || html2pdfModule;
       
-      generatePdf().set(opt).from(element).save()
-        .then(() => {
-          toast.success(t('attestation_downloaded') || 'Téléchargée !', { id: loadingToast });
-        })
-        .catch((err) => {
-          console.error("PDF generation error:", err);
-          toast.error('Erreur de génération PDF', { id: loadingToast });
-        });
+      await generatePdf().set(opt).from(element).save();
+      toast.success(t('attestation_downloaded') || 'Téléchargée !', { id: loadingToast });
     } catch (err) {
-      console.error("PDF Init error:", err);
-      toast.error('Erreur technique PDF', { id: loadingToast });
+      console.error("PDF generation error:", err);
+      toast.error('Erreur de génération PDF', { id: loadingToast });
     }
   };
 
@@ -110,10 +130,10 @@ const Dashboard = () => {
   };
 
   const steps = application ? [
-    { id: 1, label: 'Soumission', completed: true },
-    { id: 2, label: 'Décision', completed: ['approved', 'rejected'].includes(application.status), active: ['pending', 'incomplete', 'waitlisted', 'approved', 'rejected'].includes(application.status) },
-    { id: 3, label: 'Chambre', completed: !!application.room, active: application.status === 'approved' && !application.room },
-    { id: 4, label: 'Finalisé', completed: !!application.room, active: !!application.room }
+    { id: 1, label: t('step_submission') || 'Soumission', completed: true },
+    { id: 2, label: t('step_decision') || 'Décision', completed: ['approved', 'rejected'].includes(application.status), active: ['pending', 'incomplete', 'waitlisted', 'approved', 'rejected'].includes(application.status) },
+    { id: 3, label: t('step_room') || 'Chambre', completed: !!application.room, active: application.status === 'approved' && !application.room },
+    { id: 4, label: t('step_finalized') || 'Finalisé', completed: !!application.room, active: !!application.room }
   ] : [];
 
   const containerVariants = {
@@ -269,24 +289,43 @@ const Dashboard = () => {
                             type="file" 
                             accept="image/*"
                             capture="environment"
-                            onChange={(e) => setReceiptFile(e.target.files[0])}
+                            onChange={(e) => handleReceiptFileChange(e.target.files[0])}
                             className="hidden" 
                             id="receipt-scan" 
                           />
                           <input 
                             type="file" 
                             accept="image/*,.pdf" 
-                            onChange={(e) => setReceiptFile(e.target.files[0])}
+                            onChange={(e) => handleReceiptFileChange(e.target.files[0])}
                             className="hidden" 
                             id="receipt-upload" 
                           />
                           
                           {receiptFile ? (
-                            <div className="flex items-center justify-between gap-3 py-2.5 px-4 border border-indigo-200 dark:border-indigo-850 rounded-xl bg-white dark:bg-slate-900 text-indigo-700 dark:text-indigo-400 text-xs font-bold w-full md:w-56">
-                              <span className="truncate max-w-[130px]">{receiptFile.name}</span>
-                              <button type="button" onClick={() => setReceiptFile(null)} className="text-red-500 hover:text-red-700 cursor-pointer">
-                                <XCircle size={16} />
-                              </button>
+                            <div className="flex flex-col gap-2 w-full md:w-56">
+                              {/* Image preview thumbnail */}
+                              {receiptPreviewUrl && (
+                                <div className="relative">
+                                  <img 
+                                    src={receiptPreviewUrl} 
+                                    alt="Aperçu reçu" 
+                                    className="w-full h-24 object-cover rounded-xl border border-indigo-200 dark:border-indigo-900/40"
+                                  />
+                                  <button 
+                                    type="button"
+                                    onClick={() => setShowPreview(p => !p)}
+                                    className="absolute bottom-1.5 right-1.5 bg-black/50 text-white rounded-lg p-1 text-[10px] flex items-center gap-1 font-bold"
+                                  >
+                                    <Eye size={10} /> Agrandir
+                                  </button>
+                                </div>
+                              )}
+                              <div className="flex items-center justify-between gap-3 py-2.5 px-4 border border-indigo-200 dark:border-indigo-850 rounded-xl bg-white dark:bg-slate-900 text-indigo-700 dark:text-indigo-400 text-xs font-bold">
+                                <span className="truncate max-w-[130px]">{receiptFile.name}</span>
+                                <button type="button" onClick={handleClearReceipt} className="text-red-500 hover:text-red-700 cursor-pointer">
+                                  <XCircle size={16} />
+                                </button>
+                              </div>
                             </div>
                           ) : (
                             <div className="flex gap-2">
@@ -399,20 +438,20 @@ const Dashboard = () => {
                 {editingProfile ? (
                   <form onSubmit={handleProfileUpdate} className="space-y-4">
                     <div className="space-y-1">
-                      <label className="text-[9px] font-black text-slate-400 uppercase tracking-wider">Téléphone</label>
-                      <input className="w-full bg-slate-950/70 border border-white/10 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-emerald-500" value={profileForm.phone} onChange={e => setProfileForm({ ...profileForm, phone: e.target.value })} />
+                      <label className="text-[9px] font-black text-slate-400 uppercase tracking-wider">{t('phone') || 'Téléphone'}</label>
+                      <input disabled={profileSaving} className="w-full bg-slate-950/70 border border-white/10 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-emerald-500 disabled:opacity-50" value={profileForm.phone} onChange={e => setProfileForm({ ...profileForm, phone: e.target.value })} />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[9px] font-black text-slate-400 uppercase tracking-wider">Adresse</label>
-                      <input className="w-full bg-slate-950/70 border border-white/10 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-emerald-500" value={profileForm.address} onChange={e => setProfileForm({ ...profileForm, address: e.target.value })} />
+                      <label className="text-[9px] font-black text-slate-400 uppercase tracking-wider">{t('address') || 'Adresse'}</label>
+                      <input disabled={profileSaving} className="w-full bg-slate-950/70 border border-white/10 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-emerald-500 disabled:opacity-50" value={profileForm.address} onChange={e => setProfileForm({ ...profileForm, address: e.target.value })} />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[9px] font-black text-slate-400 uppercase tracking-wider">Ville</label>
-                      <input className="w-full bg-slate-950/70 border border-white/10 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-emerald-500" value={profileForm.city} onChange={e => setProfileForm({ ...profileForm, city: e.target.value })} />
+                      <label className="text-[9px] font-black text-slate-400 uppercase tracking-wider">{t('city') || 'Ville'}</label>
+                      <input disabled={profileSaving} className="w-full bg-slate-950/70 border border-white/10 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-emerald-500 disabled:opacity-50" value={profileForm.city} onChange={e => setProfileForm({ ...profileForm, city: e.target.value })} />
                     </div>
                     <div className="flex gap-2 pt-2">
-                      <button type="button" onClick={() => setEditingProfile(false)} className="flex-1 py-1.5 rounded-lg border border-white/10 text-slate-350 hover:bg-white/5 font-bold text-[10px]">Annuler</button>
-                      <button type="submit" disabled={profileSaving} className="flex-1 py-1.5 rounded-lg bg-emerald-500 text-white font-bold text-[10px] hover:bg-emerald-600">{profileSaving ? 'Envoi...' : 'Enregistrer'}</button>
+                      <button type="button" disabled={profileSaving} onClick={() => setEditingProfile(false)} className="flex-1 py-1.5 rounded-lg border border-white/10 text-slate-350 hover:bg-white/5 font-bold text-[10px] disabled:opacity-50">{t('cancel') || 'Annuler'}</button>
+                      <button type="submit" disabled={profileSaving} className="flex-1 py-1.5 rounded-lg bg-emerald-500 text-white font-bold text-[10px] hover:bg-emerald-600 disabled:opacity-50">{profileSaving ? '...' : t('save') || 'Enregistrer'}</button>
                     </div>
                   </form>
                 ) : (
@@ -535,6 +574,39 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+      {/* Full-screen receipt image preview modal */}
+      <AnimatePresence>
+        {showPreview && receiptPreviewUrl && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-center justify-center p-4"
+            onClick={() => setShowPreview(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.9 }}
+              className="relative max-w-3xl w-full"
+              onClick={e => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setShowPreview(false)}
+                className="absolute -top-3 -right-3 z-10 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-lg text-slate-700 hover:text-red-500 transition-colors"
+              >
+                <XCircle size={20} />
+              </button>
+              <img
+                src={receiptPreviewUrl}
+                alt="Aperçu complet du reçu"
+                className="w-full max-h-[85vh] object-contain rounded-2xl shadow-2xl"
+              />
+              <p className="text-center text-white/60 text-xs mt-3 font-medium">Cliquez en dehors pour fermer</p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
     </div>
   );

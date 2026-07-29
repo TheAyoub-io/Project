@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inscription — e-Internat</title>
+  <link rel="stylesheet" href="css/design-system.css" />
+  <link rel="stylesheet" href="css/auth.css" />
+</head>
+<body>
+
+  <div class="auth-wrapper">
+    <!-- Left Panel -->
+    <div class="auth-left">
+      <img src="assets/campus_banner.png" alt="Campus" class="auth-bg" />
+      <div class="auth-left-overlay"></div>
+      <div class="auth-left-content">
+        <h1>Rejoignez<br/><span class="text-gradient-green">l'Excellence</span></h1>
+        <p>Créez votre compte pour démarrer votre candidature à l'internat.</p>
+        
+        <div class="auth-perks">
+          <div class="auth-perk">
+            <div class="auth-perk-icon">📄</div>
+            <div class="auth-perk-text">
+              <h4>Dossier 100% numérique</h4>
+              <p>Plus besoin de paperasse</p>
+            </div>
+          </div>
+          <div class="auth-perk">
+            <div class="auth-perk-icon">🔒</div>
+            <div class="auth-perk-text">
+              <h4>Vos données en sécurité</h4>
+              <p>Confidentialité absolue</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Panel -->
+    <div class="auth-right">
+      <div class="auth-blob-1"></div>
+      <div class="auth-blob-2"></div>
+
+      <div class="auth-form-container glass-card">
+        <div class="auth-header">
+          <a href="index.html">
+            <img src="assets/official_logo.png" alt="Logo" />
+          </a>
+          <h2>Créer un compte</h2>
+          <p>Rejoignez-nous en quelques clics</p>
+        </div>
+
+        <div id="alert-container"></div>
+
+        <form id="register-form" class="auth-form">
+          <div class="auth-input-group">
+            <label class="form-label" for="email">Adresse email</label>
+            <div style="position:relative;">
+              <span class="form-icon">✉</span>
+              <input type="email" id="email" class="form-input form-input-with-icon" placeholder="votre@email.com" required autocomplete="email" />
+            </div>
+          </div>
+
+          <div class="auth-input-group">
+            <label class="form-label" for="password">Mot de passe</label>
+            <div style="position:relative;">
+              <span class="form-icon">🔒</span>
+              <input type="password" id="password" class="form-input form-input-with-icon" placeholder="••••••••" required autocomplete="new-password" />
+            </div>
+            
+            <!-- Password Strength UI -->
+            <div class="pwd-strength-container">
+              <div class="pwd-strength-bar">
+                <div class="pwd-strength-seg" id="seg-1"></div>
+                <div class="pwd-strength-seg" id="seg-2"></div>
+                <div class="pwd-strength-seg" id="seg-3"></div>
+              </div>
+              <div class="pwd-reqs">
+                <div class="pwd-req" id="req-len">8+ caractères</div>
+                <div class="pwd-req" id="req-num">Un chiffre</div>
+                <div class="pwd-req" id="req-char">Caractère spécial</div>
+                <div class="pwd-req" id="req-up">Une majuscule</div>
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="submit-btn" style="width:100%;margin-top:0.5rem;" disabled>
+            Créer mon compte
+          </button>
+        </form>
+
+        <div class="auth-footer">
+          Vous avez déjà un compte ? <a href="login.html">Se connecter</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/utils.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      auth.redirectIfLoggedIn();
+
+      const form = document.getElementById('register-form');
+      const btn = document.getElementById('submit-btn');
+      const pwdInput = document.getElementById('password');
+      
+      // Password validation elements
+      const seg1 = document.getElementById('seg-1');
+      const seg2 = document.getElementById('seg-2');
+      const seg3 = document.getElementById('seg-3');
+      const reqLen = document.getElementById('req-len');
+      const reqNum = document.getElementById('req-num');
+      const reqChar = document.getElementById('req-char');
+      const reqUp = document.getElementById('req-up');
+
+      let isPwdValid = false;
+
+      // Real-time password validation
+      pwdInput.addEventListener('input', (e) => {
+        const p = e.target.value;
+        const hasLen = p.length >= 8;
+        const hasNum = /\d/.test(p);
+        const hasChar = /[!@#$%^&*(),.?":{}|<>]/.test(p);
+        const hasUp = /[A-Z]/.test(p);
+
+        reqLen.classList.toggle('valid', hasLen);
+        reqNum.classList.toggle('valid', hasNum);
+        reqChar.classList.toggle('valid', hasChar);
+        reqUp.classList.toggle('valid', hasUp);
+
+        // Score 0-4
+        let score = 0;
+        if (hasLen) score++;
+        if (hasNum) score++;
+        if (hasChar) score++;
+        if (hasUp) score++;
+
+        // Reset segments
+        seg1.className = 'pwd-strength-seg';
+        seg2.className = 'pwd-strength-seg';
+        seg3.className = 'pwd-strength-seg';
+
+        if (score > 0 && score < 3) {
+          seg1.classList.add('active-weak');
+        } else if (score === 3) {
+          seg1.classList.add('active-fair');
+          seg2.classList.add('active-fair');
+        } else if (score === 4) {
+          seg1.classList.add('active-good');
+          seg2.classList.add('active-good');
+          seg3.classList.add('active-good');
+        }
+
+        isPwdValid = (score === 4);
+        btn.disabled = !isPwdValid;
+      });
+
+      // Submit
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!isPwdValid) return;
+
+        const email = document.getElementById('email').value;
+        const password = pwdInput.value;
+        const alertContainer = document.getElementById('alert-container');
+
+        alertContainer.innerHTML = '';
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<div class="spinner" style="width:1.25rem;height:1.25rem;border-width:2px;border-top-color:#fff;"></div>';
+        btn.disabled = true;
+
+        try {
+          await auth.register(email, password);
+          // Auto login after register
+          await auth.login(email, password);
+          window.location.href = 'apply.html'; // Go directly to application
+        } catch (err) {
+          btn.innerHTML = originalText;
+          btn.disabled = false;
+          let detail = err.data?.detail || 'Erreur lors de la création du compte.';
+          if (Array.isArray(detail)) detail = detail[0].msg;
+          alertContainer.innerHTML = `<div class="alert alert-danger" style="margin-bottom:1.5rem">${detail}</div>`;
+        }
+      });
+    });
+  </script>
+</body>
+</html>

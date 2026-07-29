@@ -8,6 +8,11 @@ const authService = {
     });
     return response.data;
   },
+
+  loginWithGoogle: async (googleToken) => {
+    const response = await api.post('/auth/google', { token: googleToken });
+    return response.data;
+  },
   
   register: async (userData) => {
     const response = await api.post('/auth/register', userData);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Download, LayoutDashboard, BarChart3, FileText, Home, Mail, User, ChevronRight, Menu, X, LogOut, MessageSquareWarning } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { toast } from 'react-hot-toast';
@@ -16,7 +16,10 @@ import logoImg from '../assets/official_logo.png';
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState('overview');
+  const [searchParams, setSearchParams] = useSearchParams();
+  // Persist active tab in URL so navigating away and back restores the correct view
+  const activeTab = searchParams.get('tab') || 'overview';
+  const setActiveTab = (tab) => setSearchParams({ tab });
   const [applicationsFilter, setApplicationsFilter] = useState('');
   const [exporting, setExporting] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);

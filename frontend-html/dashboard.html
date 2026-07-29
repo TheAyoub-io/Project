@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mon Espace — e-Internat</title>
+  <link rel="stylesheet" href="css/design-system.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+  <div class="page-wrapper">
+
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+      <a href="index.html" class="navbar-brand">
+        <img src="assets/official_logo.png" alt="Logo" />
+        <span>e‑<span class="text-gradient-green">Internat</span></span>
+      </a>
+      <div class="navbar-links" id="nav-links">
+        <a href="index.html">Accueil</a>
+        <a href="dashboard.html" class="active">Mon Espace</a>
+        <a href="apply.html">Candidature</a>
+        <a href="#" onclick="auth.logout(); return false;">Déconnexion</a>
+      </div>
+      <div class="navbar-actions">
+        <button class="theme-toggle" id="theme-toggle" type="button" onclick="theme.toggle()">🌙</button>
+        <button class="mobile-menu-btn" id="mobile-menu-btn" type="button">☰</button>
+      </div>
+    </nav>
+
+    <div class="page-content dashboard-wrapper">
+      <div class="dashboard-ambient">
+        <div class="ambient-glow-1"></div>
+        <div class="ambient-glow-2"></div>
+      </div>
+
+      <div class="container container-lg">
+        
+        <!-- Welcome Banner -->
+        <div class="welcome-banner reveal">
+          <div class="welcome-content">
+            <h1>Bonjour, <span class="text-gradient-green" id="user-name">Étudiant</span> 👋</h1>
+            <p>Bienvenue sur votre espace personnel. Vous pouvez suivre l'état de votre candidature en temps réel.</p>
+          </div>
+          <div class="flex gap-4">
+            <div class="status-card-mini">
+              <div class="label">Session Actuelle</div>
+              <div class="badge badge-success">2026/2027</div>
+              <div class="date" id="current-date"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="loader-container" style="padding: 4rem; text-align: center;">
+          <div class="spinner" style="margin: 0 auto;"></div>
+        </div>
+
+        <div id="dashboard-content" class="hidden dashboard-grid">
+          <!-- Left Column -->
+          <div class="flex-col gap-6">
+            
+            <!-- Application Status Card -->
+            <div class="glass-card reveal delay-100">
+              <div class="dashboard-section-title">
+                <span class="icon">📈</span> État de ma candidature
+              </div>
+              
+              <div id="no-app-msg" class="hidden">
+                <div class="alert alert-info" style="margin-bottom: 1.5rem;">
+                  Vous n'avez pas encore déposé de candidature.
+                </div>
+                <a href="apply.html" class="btn btn-primary">Déposer mon dossier maintenant →</a>
+              </div>
+
+              <div id="app-status-container" class="hidden">
+                <div class="flex justify-between items-center mb-4">
+                  <div>
+                    <div class="text-xs font-bold text-muted uppercase tracking-wide">Statut actuel</div>
+                    <div id="current-status-badge" class="mt-2"></div>
+                  </div>
+                  <div class="text-right">
+                    <div class="text-xs font-bold text-muted uppercase tracking-wide">Score</div>
+                    <div class="text-2xl font-black text-primary" id="app-score">0</div>
+                  </div>
+                </div>
+
+                <div class="status-tracker" id="status-tracker">
+                  <!-- Injected via JS -->
+                </div>
+
+                <div id="attestation-btn-container" class="hidden">
+                  <button id="btn-download-pdf" class="btn btn-pdf">
+                    <span class="icon">📄</span> Télécharger l'attestation d'admission
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Documents Card -->
+            <div class="glass-card reveal delay-200">
+              <div class="dashboard-section-title">
+                <span class="icon">📎</span> Mes documents
+              </div>
+              <div id="docs-list" class="flex-col gap-3">
+                <!-- Injected via JS -->
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Right Column (Sidebar) -->
+          <div class="flex-col gap-6">
+            
+            <!-- Profile Info -->
+            <div class="card reveal delay-300">
+              <div class="dashboard-section-title">
+                <span class="icon">👤</span> Mon Profil
+              </div>
+              <div class="profile-info" id="profile-info">
+                <!-- Injected via JS -->
+              </div>
+            </div>
+
+            <!-- Room Assignment (Only if admitted) -->
+            <div class="card reveal delay-400 hidden" id="room-card">
+              <div class="dashboard-section-title">
+                <span class="icon">🔑</span> Mon Hébergement
+              </div>
+              <div class="room-card">
+                <div class="room-icon">🏠</div>
+                <div class="room-details">
+                  <h5 id="room-number">Chambre --</h5>
+                  <p>Pavillon B</p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Hidden Attestation Template for PDF -->
+    <div id="attestation-content">
+      <div class="attest-header">
+        <img src="assets/official_logo.png" alt="Logo LTMV" />
+        <div>Royaume du Maroc<br/>Ministère de l'Éducation Nationale<br/>Lycée Technique Mohamed V - Beni Mellal</div>
+      </div>
+      <div class="attest-title">Attestation d'Admission à l'Internat</div>
+      <div class="attest-body">
+        Le Directeur du Lycée Technique Mohamed V atteste par la présente que :<br/><br/>
+        L'étudiant(e) : <strong id="attest-name"></strong><br/>
+        Né(e) le : <strong id="attest-dob"></strong> à <strong id="attest-pob"></strong><br/>
+        Sexe : <strong id="attest-gender"></strong><br/>
+        Filière : <strong id="attest-filiere"></strong><br/><br/>
+        A été officiellement <strong>ADMIS(E)</strong> à l'internat de l'établissement pour l'année scolaire 2026/2027.<br/><br/>
+        Décision prise en commission le : <strong id="attest-date"></strong>
+      </div>
+      <div class="attest-footer">
+        Fait à Beni Mellal, le <span id="attest-today"></span><br/><br/>
+        <strong>Le Directeur</strong><br/>
+        <img src="assets/signature.png" alt="Signature" style="height:80px; margin-top:20px; opacity:0.8;" />
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-bottom">
+        <p>🎓 © 2026 Lycée Technique Mohamed V. Tous droits réservés.</p>
+      </div>
+    </footer>
+
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

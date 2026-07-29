@@ -5,6 +5,7 @@ import './index.css'
 import './i18n'
 import { ThemeProvider } from './components/ThemeContext.jsx'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { GoogleOAuthProvider } from '@react-oauth/google'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -48,11 +49,13 @@ class ErrorBoundary extends React.Component {
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider>
-          <App />
-        </ThemeProvider>
-      </QueryClientProvider>
+      <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || "YOUR_GOOGLE_CLIENT_ID"}>
+        <QueryClientProvider client={queryClient}>
+          <ThemeProvider>
+            <App />
+          </ThemeProvider>
+        </QueryClientProvider>
+      </GoogleOAuthProvider>
     </ErrorBoundary>
   </React.StrictMode>,
 )

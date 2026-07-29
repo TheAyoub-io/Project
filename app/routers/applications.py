@@ -295,7 +295,6 @@ async def update_application(
     profile.city = city
     profile.province = province
     profile.gender = gender
-    profile.province = province
     
     # 4. Update Application
     application.student_type = student_type

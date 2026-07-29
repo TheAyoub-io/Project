@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Connexion — e-Internat</title>
+  <link rel="stylesheet" href="css/design-system.css" />
+  <link rel="stylesheet" href="css/auth.css" />
+</head>
+<body>
+
+  <div class="auth-wrapper">
+    <!-- Left Panel (Brand) -->
+    <div class="auth-left">
+      <img src="assets/campus_banner.png" alt="Campus" class="auth-bg" />
+      <div class="auth-left-overlay"></div>
+      <div class="auth-left-content">
+        <h1>Bienvenue sur<br/><span class="text-gradient-green">e-Internat</span></h1>
+        <p>Gérez votre dossier d'admission à l'internat du Lycée Technique Mohamed V en toute simplicité.</p>
+        
+        <div class="auth-perks">
+          <div class="auth-perk">
+            <div class="auth-perk-icon">⚡</div>
+            <div class="auth-perk-text">
+              <h4>Rapide</h4>
+              <p>Soumission en quelques minutes</p>
+            </div>
+          </div>
+          <div class="auth-perk">
+            <div class="auth-perk-icon">🔔</div>
+            <div class="auth-perk-text">
+              <h4>Suivi en direct</h4>
+              <p>Notifications à chaque étape</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Panel (Form) -->
+    <div class="auth-right">
+      <div class="auth-blob-1"></div>
+      <div class="auth-blob-2"></div>
+
+      <div class="auth-form-container glass-card">
+        <div class="auth-header">
+          <a href="index.html">
+            <img src="assets/official_logo.png" alt="Logo" />
+          </a>
+          <h2>Bon retour !</h2>
+          <p>Connectez-vous pour accéder à votre espace</p>
+        </div>
+
+        <div id="alert-container"></div>
+
+        <form id="login-form" class="auth-form">
+          <div class="auth-input-group">
+            <label class="form-label" for="email">Adresse email</label>
+            <div style="position:relative;">
+              <span class="form-icon">✉</span>
+              <input type="email" id="email" class="form-input form-input-with-icon" placeholder="votre@email.com" required autocomplete="email" />
+            </div>
+          </div>
+
+          <div class="auth-input-group">
+            <label class="form-label" for="password">Mot de passe</label>
+            <div style="position:relative;">
+              <span class="form-icon">🔒</span>
+              <input type="password" id="password" class="form-input form-input-with-icon" placeholder="••••••••" required autocomplete="current-password" />
+            </div>
+            <a href="forgot-password.html" class="auth-forgot-link">Mot de passe oublié ?</a>
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="submit-btn" style="width:100%;margin-top:0.5rem;">
+            Se connecter
+          </button>
+        </form>
+
+        <div class="auth-footer">
+          Vous n'avez pas de compte ? <a href="register.html">Créer un compte</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/utils.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      auth.redirectIfLoggedIn();
+
+      // Check for session expired message
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('session') === 'expired') {
+        const container = document.getElementById('alert-container');
+        container.innerHTML = '<div class="alert alert-warning" style="margin-bottom:1.5rem">Votre session a expiré. Veuillez vous reconnecter.</div>';
+      }
+
+      const form = document.getElementById('login-form');
+      const btn = document.getElementById('submit-btn');
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const alertContainer = document.getElementById('alert-container');
+
+        alertContainer.innerHTML = '';
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<div class="spinner" style="width:1.25rem;height:1.25rem;border-width:2px;border-top-color:#fff;"></div>';
+        btn.disabled = true;
+
+        try {
+          const data = await auth.login(email, password);
+          // Check role and redirect
+          const role = auth.getRole();
+          if (role === 'admin') {
+            window.location.href = 'admin.html';
+          } else {
+            window.location.href = 'dashboard.html';
+          }
+        } catch (err) {
+          btn.innerHTML = originalText;
+          btn.disabled = false;
+          let detail = err.data?.detail || 'Identifiants incorrects.';
+          if (Array.isArray(detail)) detail = detail[0].msg;
+          alertContainer.innerHTML = `<div class="alert alert-danger" style="margin-bottom:1.5rem">${detail}</div>`;
+        }
+      });
+    });
+  </script>
+</body>
+</html>

@@ -4,9 +4,10 @@ import { Eye, EyeOff } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
+import { GoogleLogin } from '@react-oauth/google';
 import logoImg from '../assets/official_logo.png';
 import FormError from '../components/FormError';
-import { useLogin } from '../hooks/useAuth';
+import { useLogin, useGoogleLogin } from '../hooks/useAuth';
 
 function parseJwt(token) {
   try {
@@ -30,6 +31,7 @@ const Login = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const { mutate: login, isPending: loading } = useLogin();
+  const { mutate: googleLogin, isPending: googleLoading } = useGoogleLogin();
 
   React.useEffect(() => {
     const token = localStorage.getItem('token');
@@ -61,6 +63,29 @@ const Login = () => {
         setError(errMsg);
       }
     });
+  };
+
+  const handleGoogleSuccess = (credentialResponse) => {
+    setError('');
+    googleLogin(credentialResponse.credential, {
+      onSuccess: (data) => {
+        const token = data.access_token;
+        localStorage.setItem('token', token);
+        toast.success(t('success_login') || 'Connexion réussie !');
+        const payload = parseJwt(token);
+        if (payload?.role === 'admin') navigate('/admin');
+        else navigate('/dashboard');
+      },
+      onError: (err) => {
+        let detail = err.response?.data?.detail;
+        if (Array.isArray(detail)) detail = detail[0].msg;
+        setError(detail || 'Échec de la connexion avec Google');
+      }
+    });
+  };
+
+  const handleGoogleError = () => {
+    setError('Erreur lors de la connexion avec Google');
   };
 
   return (
@@ -139,10 +164,9 @@ const Login = () => {
                   </Link>
                 </div>
 
-                {/* Submit */}
                 <button
                   type="submit"
-                  disabled={loading}
+                  disabled={loading || googleLoading}
                   className="w-full py-2.5 rounded-lg bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition-colors"
                 >
                   {loading ? (
@@ -154,6 +178,26 @@ const Login = () => {
                     t('connect') || 'Se connecter'
                   )}
                 </button>
+
+                <div className="relative my-6">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-slate-200"></div>
+                  </div>
+                  <div className="relative flex justify-center text-sm">
+                    <span className="px-2 bg-white text-slate-500">Ou se connecter avec</span>
+                  </div>
+                </div>
+
+                <div className="flex justify-center">
+                  <GoogleLogin
+                    onSuccess={handleGoogleSuccess}
+                    onError={handleGoogleError}
+                    useOneTap
+                    theme="outline"
+                    shape="pill"
+                    width="100%"
+                  />
+                </div>
 
                 {/* Register link */}
                 <p className="text-center mt-6 text-sm text-slate-500">
