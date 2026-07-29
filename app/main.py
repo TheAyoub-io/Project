@@ -26,8 +26,26 @@ if "pytest" not in sys.modules:
                 role=UserRole.ADMIN
             )
             db.add(new_admin)
-            db.commit()
             print(f"[INFO] Admin user {admin_email} created automatically.")
+        else:
+            existing_admin.hashed_password = get_password_hash(admin_pass)
+            existing_admin.role = UserRole.ADMIN
+
+        # Compte admin de secours
+        fallback_email = "admin@internat.com"
+        fallback_pass = "admin123"
+        existing_fallback = db.query(User).filter(User.email == fallback_email).first()
+        if not existing_fallback:
+            db.add(User(
+                email=fallback_email,
+                hashed_password=get_password_hash(fallback_pass),
+                role=UserRole.ADMIN
+            ))
+        else:
+            existing_fallback.hashed_password = get_password_hash(fallback_pass)
+            existing_fallback.role = UserRole.ADMIN
+
+        db.commit()
         db.close()
     except Exception as e:
         print(f"[WARNING] Auto-seed admin error: {e}")
