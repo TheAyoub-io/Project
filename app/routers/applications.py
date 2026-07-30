@@ -24,12 +24,9 @@ router = APIRouter(
 import stripe
 
 ALLOWED_PROVINCES = ["Azilal", "Fkih Ben Salah", "Khénifra", "Khouribga", "Beni Mellal"]
-UPLOAD_DIR = "uploads"
+UPLOAD_DIR = "/tmp/uploads" if os.environ.get("VERCEL") else "uploads"
 STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "")
 stripe.api_key = STRIPE_SECRET_KEY
-
-# Ensure upload directory exists
-os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 @router.post("/create-payment-intent")
 async def create_payment_intent():
