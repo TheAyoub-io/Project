@@ -9,8 +9,8 @@ import os
 
 # Create tables and auto-seed admin automatically on startup (unless running tests)
 if "pytest" not in sys.modules:
-    Base.metadata.create_all(bind=engine)
     try:
+        Base.metadata.create_all(bind=engine)
         from .models.database import SessionLocal
         from .models.models import User, UserRole
         from .auth.security import get_password_hash
@@ -48,7 +48,7 @@ if "pytest" not in sys.modules:
         db.commit()
         db.close()
     except Exception as e:
-        print(f"[WARNING] Auto-seed admin error: {e}")
+        print(f"[WARNING] Startup error (DB init/seed): {e}")
 
 app = FastAPI(
     title="Internat Admission System API",
