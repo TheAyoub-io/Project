@@ -67,11 +67,14 @@ origins = [
     "http://localhost",           # Capacitor default Android origin
     "capacitor://localhost",      # Capacitor default iOS origin
     "ionic://localhost",          # Alternative mobile origin
+    "https://project-one-mu-48.vercel.app",
+    "https://e-internat-maroc.vercel.app",
 ]
 
 frontend_url = os.getenv("FRONTEND_URL")
 if frontend_url:
-    origins.append(frontend_url)
+    for url in frontend_url.split(","):
+        origins.append(url.strip())
 
 app.add_middleware(
     CORSMiddleware,
