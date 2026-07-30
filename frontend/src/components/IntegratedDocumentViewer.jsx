@@ -11,9 +11,11 @@ const IntegratedDocumentViewer = ({ isOpen, onClose, documents, initialIndex = 0
     if (!isOpen || !documents || documents.length === 0) return null;
 
     const currentDoc = documents[currentIndex];
-    const isImage = /\.(jpg|jpeg|png|webp|gif)$/i.test(currentDoc.file_url);
-    const isPDF = /\.pdf$/i.test(currentDoc.file_url);
-    const fileUrl = `${API_BASE_URL}/${currentDoc.file_url}`;
+    const rawUrl = currentDoc?.file_url || '';
+    const cleanPath = rawUrl.replace(/\\/g, '/').replace(/^.*uploads\//, 'uploads/');
+    const isImage = /\.(jpg|jpeg|png|webp|gif)$/i.test(cleanPath);
+    const isPDF = /\.pdf$/i.test(cleanPath);
+    const fileUrl = rawUrl.startsWith('http') ? rawUrl : `${API_BASE_URL}/${cleanPath}`;
 
     const handleNext = () => {
         setCurrentIndex((prev) => (prev + 1) % documents.length);

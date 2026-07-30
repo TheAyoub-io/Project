@@ -316,10 +316,11 @@ async def update_application(
         with open(file_path, "wb") as buffer:
             shutil.copyfileobj(upload_file.file, buffer)
 
+        db_file_url = f"uploads/{unique_filename}"
         if existing_doc:
-            existing_doc.file_url = file_path
+            existing_doc.file_url = db_file_url
         else:
-            db.add(Document(application_id=application.id, document_type=doc_type, file_url=file_path))
+            db.add(Document(application_id=application.id, document_type=doc_type, file_url=db_file_url))
 
     update_document(DocumentType.CIN_COPY, cin_copy)
     update_document(DocumentType.TRANSCRIPT, transcript)

@@ -2,6 +2,16 @@ import React, { useState } from 'react';
 import { X, CheckCircle, XCircle, AlertCircle, MessageCircle, FileText, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ChatWindow from './ChatWindow';
+import { API_BASE_URL } from '../lib/axios';
+
+const getDocumentUrl = (doc) => {
+    if (!doc || !doc.file_url) return '';
+    const raw = doc.file_url;
+    if (raw.startsWith('http')) return raw;
+    // Normalize path separators and extract relative uploads path
+    const cleanPath = raw.replace(/\\/g, '/').replace(/^.*uploads\//, 'uploads/');
+    return `${API_BASE_URL}/${cleanPath}`;
+};
 
 const ReviewPanel = ({ application, onClose, onStatusChange }) => {
     const [activeDocIndex, setActiveDocIndex] = useState(0);
@@ -18,6 +28,9 @@ const ReviewPanel = ({ application, onClose, onStatusChange }) => {
         'residency_cert': 'Certificat de résidence',
         'fee_receipt': 'Reçu d\'inscription'
     };
+
+    const docUrl = getDocumentUrl(currentDoc);
+    const isImage = /\.(jpg|jpeg|png|webp|gif)$/i.test(currentDoc?.file_url || '');
 
     return (
         <motion.div
@@ -48,14 +61,22 @@ const ReviewPanel = ({ application, onClose, onStatusChange }) => {
                     </div>
                 </div>
 
-                <div className="flex-1 overflow-auto p-8 flex justify-center bg-slate-200 dark:bg-slate-950">
+                <div className="flex-1 overflow-auto p-8 flex justify-center items-center bg-slate-200 dark:bg-slate-950">
                     {currentDoc ? (
-                        <div className="shadow-2xl max-w-4xl w-full bg-white rounded-lg overflow-hidden border border-slate-300 dark:border-slate-700">
-                            <iframe
-                                src={`http://localhost:8000/${currentDoc.file_url}`}
-                                className="w-full h-full min-h-[80vh] border-none"
-                                title="Document Preview"
-                            />
+                        <div className="shadow-2xl max-w-4xl w-full bg-white rounded-lg overflow-hidden border border-slate-300 dark:border-slate-700 flex items-center justify-center min-h-[80vh]">
+                            {isImage ? (
+                                <img
+                                    src={docUrl}
+                                    alt={currentDoc.document_type}
+                                    className="max-w-full max-h-[80vh] object-contain p-4"
+                                />
+                            ) : (
+                                <iframe
+                                    src={docUrl}
+                                    className="w-full h-full min-h-[80vh] border-none"
+                                    title="Document Preview"
+                                />
+                            )}
                         </div>
                     ) : (
                         <div className="m-auto text-slate-400 flex flex-col items-center gap-4">

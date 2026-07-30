@@ -28,10 +28,11 @@ def save_document(upload_file: UploadFile, application_id: int, doc_type: Docume
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(upload_file.file, buffer)
 
+    db_file_url = f"uploads/{unique_filename}"
     doc = Document(
         application_id=application_id,
         document_type=doc_type,
-        file_url=file_path
+        file_url=db_file_url
     )
     db.add(doc)
     return doc
