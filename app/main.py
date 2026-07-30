@@ -140,8 +140,9 @@ async def global_exception_handler(request, exc):
 
 
 # Serve uploaded documents
-os.makedirs("uploads", exist_ok=True)
-app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+upload_dir = "/tmp/uploads" if os.environ.get("VERCEL") else "uploads"
+os.makedirs(upload_dir, exist_ok=True)
+app.mount("/uploads", StaticFiles(directory=upload_dir), name="uploads")
 
 @app.get("/")
 def read_root():
