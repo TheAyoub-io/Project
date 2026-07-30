@@ -143,7 +143,24 @@ async def global_exception_handler(request, exc):
 # Serve uploaded documents
 upload_dir = "/tmp/uploads" if os.environ.get("VERCEL") else "uploads"
 os.makedirs(upload_dir, exist_ok=True)
-app.mount("/uploads", StaticFiles(directory=upload_dir), name="uploads")
+
+PLACEHOLDER_SVG = """<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400">
+  <rect width="600" height="400" fill="#f8fafc"/>
+  <rect x="50" y="40" width="500" height="320" rx="16" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+  <path d="M270 100 h60 v70 h-60 z" fill="none" stroke="#10b981" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M285 125 h30 M285 145 h30 M285 165 h20" stroke="#10b981" stroke-width="3" stroke-linecap="round"/>
+  <text x="300" y="230" font-family="Segoe UI, sans-serif" font-size="18" font-weight="700" fill="#1e293b" text-anchor="middle">Document de Démonstration</text>
+  <text x="300" y="260" font-family="Segoe UI, sans-serif" font-size="13" font-weight="500" fill="#64748b" text-anchor="middle">Fichier hébergé localement ou introuvable sur Vercel.</text>
+  <text x="300" y="285" font-family="Segoe UI, sans-serif" font-size="12" fill="#94a3b8" text-anchor="middle">(Téléversez un nouveau document via l'espace étudiant)</text>
+</svg>"""
+
+@app.get("/uploads/{filename:path}")
+async def serve_upload(filename: str):
+    clean_filename = os.path.basename(filename)
+    file_path = os.path.join(upload_dir, clean_filename)
+    if os.path.exists(file_path):
+        return FileResponse(file_path)
+    return Response(content=PLACEHOLDER_SVG, media_type="image/svg+xml")
 
 @app.get("/")
 def read_root():
