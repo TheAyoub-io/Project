@@ -49,7 +49,7 @@ class ErrorBoundary extends React.Component {
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <ErrorBoundary>
-      <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || "YOUR_GOOGLE_CLIENT_ID"}>
+      <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || "150323091246-gpmrgt6rnjv8nspvosm4jj88hjqhqn7o.apps.googleusercontent.com"}>
         <QueryClientProvider client={queryClient}>
           <ThemeProvider>
             <App />

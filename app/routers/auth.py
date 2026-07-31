@@ -194,11 +194,8 @@ class GoogleLoginRequest(BaseModel):
 def google_login(request: GoogleLoginRequest, db: Session = Depends(get_db)):
     try:
         # Validate the token using the google-auth library
-        google_client_id = os.getenv("GOOGLE_CLIENT_ID")
-        if google_client_id:
-            idinfo = id_token.verify_oauth2_token(request.token, google_requests.Request(), google_client_id)
-        else:
-            idinfo = id_token.verify_oauth2_token(request.token, google_requests.Request())
+        google_client_id = os.getenv("GOOGLE_CLIENT_ID", "150323091246-gpmrgt6rnjv8nspvosm4jj88hjqhqn7o.apps.googleusercontent.com")
+        idinfo = id_token.verify_oauth2_token(request.token, google_requests.Request(), google_client_id)
         email = idinfo['email']
     except ValueError:
         # Fallback for local testing with dummy token
